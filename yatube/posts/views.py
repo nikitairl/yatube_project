@@ -1,8 +1,22 @@
+# posts/views.py
 from django.shortcuts import render
-from django.http import HttpResponse
+# Импортируем модель, чтобы обратиться к ней
+from .models import Post, Group
+from django.shortcuts import render, get_object_or_404
 
 def index(request):
-    return HttpResponse("Index page, nothing here.")
+    posts = Post.objects.order_by('-pub_date')[:10]
+    context = {
+        'posts': posts,
+    }
+    return render(request, 'posts/index.html', context) 
+
 
 def group_posts(request, slug):
-    return HttpResponse("Nothing here yet, but you can still use this link: https://youtu.be/dQw4w9WgXcQ")
+    group = get_object_or_404(Group, slug=slug)
+    posts = Post.objects.filter(group=group).order_by('-pub_date')[:10]
+    context = {
+        'group': group,
+        'posts': posts,
+    }
+    return render(request, 'posts/group_list.html', context) 
